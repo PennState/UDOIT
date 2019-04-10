@@ -1,0 +1,93 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  udoit
+  labels:
+    app.kubernetes.io/name: udoit
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: udoit
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: udoit
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: nginx-config
+          configMap:
+            name: udoit-nginx-config
+        - name: app-data
+          emptyDir: {}
+      containers:
+        - name: udoit-app-server
+          image: {{ .Values.appServerImage.repository }}
+          imagePullPolicy: {{ .Values.appServerImage.pullPolicy }}
+          type: ClusterIP
+          ports:
+            - name: http
+              containerPort: 80
+          volumeMounts:
+          - name: app-data
+            mountPath: /var/www/html
+          lifecycle:
+              postStart:
+                exec:
+                  command: [
+                  "/bin/sh",
+                  "-c",
+                  
+                  # Copy the source code to the shared directory then initialize UDOIT
+                  "cp -r /app/. /var/www/html &&
+                  cd /var/www/html &&
+                  php composer.phar install"
+                  ]
+          env:
+            - name: CONSUMER_KEY
+              value: "{{ .Values.environmentVariables.consumerKey }}"
+            - name: SHARED_SECRET
+              value: "{{ .Values.environmentVariables.sharedSecret }}"
+            - name: OAUTH2_ID
+              value: "{{ .Values.environmentVariables.oauth2ID }}"
+            - name: OAUTH2_KEY
+              value: "{{ .Values.environmentVariables.oauth2Key }}"
+            - name: OAUTH2_URI
+              value: "{{ .Values.environmentVariables.oauth2URI }}"
+            - name: CANVAS_NAV_ITEM_NAME
+              value: "{{ .Values.environmentVariables.canvasNavItemName }}"
+            - name: SCAN_FILE_SIZE_LIMIT
+              value: "{{ .Values.environmentVariables.scanFileSizeLimit }}"
+            - name: ALT_TEXT_LENGTH_LIMIT
+              value: "{{ .Values.environmentVariables.altTextLengthLimit }}"
+            - name: DATABASE_HOST
+              value: "{{ .Values.environmentVariables.databaseHost }}"
+            - name: DATABASE_PORT
+              value: "{{ .Values.environmentVariables.databasePort }}"
+            - name: DATABASE_USER
+              value: "{{ .Values.environmentVariables.databaseUsername }}"
+            - name: DATABASE_PWD
+              value: "{{ .Values.environmentVariables.databasePassword }}"
+            - name: DATABASE_NAME
+              value: "{{ .Values.environmentVariables.databaseName }}"
+            - name: GOOGLE_API_KEY
+              value: "{{ .Values.environmentVariables.googleApiKey }}"
+            - name: VIMEO_API_KEY
+              value: "{{ .Values.environmentVariables.vimeoApiKey }}"
+        - name: udoit-web-server
+          image: {{ .Values.webServerImage.repository }}
+          imagePullPolicy: {{ .Values.webServerImage.pullPolicy }}
+          type: ClusterIP
+          ports:
+            - name: http
+              containerPort: 80
+          volumeMounts:
+          - name: app-data
+            mountPath: /var/www/html
+          - name: nginx-config
+            mountPath: /etc/nginx/nginx.conf
+            subPath: nginx.conf

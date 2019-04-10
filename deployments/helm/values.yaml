@@ -1,0 +1,28 @@
+replicaCount: 1
+
+webServerImage:
+  repository: nginx
+  tag: stable-alpine
+  pullPolicy: Always
+  
+appServerImage:
+  repository: <udoit_docker_registry_path>
+  tag: latest
+  pullPolicy: Always
+
+environmentVariables:
+  consumerKey: 
+  sharedSecret: 
+  oauth2ID: 
+  oauth2Key: 
+  oauth2URI: 
+  canvasNavItemName: 
+  scanFileSizeLimit: 
+  altTextLengthLimit: 
+  databaseHost: 
+  databasePort: 
+  databaseUsername: 
+  databasePassword: 
+  databaseName: 
+  googleApiKey: 
+  vimeoApiKey: 

@@ -290,6 +290,14 @@ To setup the Docker environment, follow the steps outlined in the [DOCKER.md Rea
 ## Running Tests
 We use phpunit to run unit tests on UDOIT.  To run the tests, type the following command:
 
+## Helm
+
+To deploy docker using helm:
+* Use the helm chart located under deployments/helm
+* Update your Dockerfile to push the source code to '/app'. Helm will copy the source code from '/app' to '/var/www/html' during deployment. The shared folder would otherwise appear empty to the nginx container.
+* Update values.yaml with the path to the docker registry along with any appropriate environment variables
+* To run any commands during deployment, update lifecycle.postStart in deployment.yaml
+
 ```
 $ php composer.phar test
 ```
