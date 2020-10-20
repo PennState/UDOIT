@@ -7,7 +7,7 @@ UDOIT enables faculty to identify accessibility issues in Canvas by Instructure.
 In late 2013, the proposal submitted by UCF's Center for Distributed Learning won Instructure, Inc.’s Canvas Grant in the higher education category. The $10,000 grant was awarded to UCF – CDL to take an existing tool and further develop this solution into what is now known as UDOIT.
 
 
-## Awardss
+## Awards
 
 UDOIT has been recognized by the industry, heres a quick list of the awards it's won.
 
